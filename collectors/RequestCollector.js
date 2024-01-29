@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
-const {getAllInitiators} = require('../helpers/initiators');
-const {filterHeaders, normalizeHeaders} = require('../helpers/headers');
+const { getAllInitiators } = require('../helpers/initiators');
+const { filterHeaders, normalizeHeaders } = require('../helpers/headers');
 const BaseCollector = require('./BaseCollector');
 
 const URL = require('url').URL;
 const crypto = require('crypto');
-const {Buffer} = require('buffer');
+const { Buffer } = require('buffer');
 
 const DEFAULT_SAVE_HEADERS = ['etag', 'set-cookie', 'cache-control', 'expires', 'pragma', 'p3p', 'timing-allow-origin', 'access-control-allow-origin', 'accept-ch'];
 
@@ -14,7 +14,7 @@ class RequestCollector extends BaseCollector {
     /**
      * @param {{saveResponseHash?: boolean, saveHeaders?: Array<string>}} additionalOptions
      */
-    constructor(additionalOptions = {saveResponseHash: true, saveHeaders: DEFAULT_SAVE_HEADERS}) {
+    constructor(additionalOptions = { saveResponseHash: true, saveHeaders: DEFAULT_SAVE_HEADERS }) {
         super();
         this._saveResponseHash = (additionalOptions.saveResponseHash === true);
         this._saveHeaders = DEFAULT_SAVE_HEADERS;
@@ -48,9 +48,9 @@ class RequestCollector extends BaseCollector {
     /**
      * @param {{cdpClient: import('puppeteer').CDPSession, url: string, type: import('./TargetCollector').TargetType}} targetInfo 
      */
-    async addTarget({cdpClient}) {
+    async addTarget({ cdpClient }) {
         await cdpClient.send('Runtime.enable');
-        await cdpClient.send('Runtime.setAsyncCallStackDepth', {maxDepth: 32});
+        await cdpClient.send('Runtime.setAsyncCallStackDepth', { maxDepth: 32 });
 
         await cdpClient.send('Network.enable');
 
@@ -86,11 +86,12 @@ class RequestCollector extends BaseCollector {
     async getResponseBodyHash(id, cdp) {
         try {
             // @ts-ignore oversimplified .send signature
-            let {body, base64Encoded} = await cdp.send('Network.getResponseBody', {requestId: id});
+            let { body, base64Encoded } = await cdp.send('Network.getResponseBody', { requestId: id });
 
             if (base64Encoded) {
                 body = Buffer.from(body, 'base64').toString('utf-8');
             }
+
 
             return crypto.createHash('sha256').update(body).digest('hex');
         } catch (e) {
@@ -131,7 +132,7 @@ class RequestCollector extends BaseCollector {
         /**
          * @type {InternalRequestData}
          */
-        const requestData = {id, url, method, type, initiator, startTime};
+        const requestData = { id, url, method, type, initiator, startTime };
 
         // if request A gets redirected to B which gets redirected to C chrome will produce 4 events:
         // requestWillBeSent(A) requestWillBeSent(B) requestWillBeSent(C) responseReceived()
@@ -304,7 +305,7 @@ class RequestCollector extends BaseCollector {
      * @param {{finalUrl: string, urlFilter?: function(string):boolean}} options
      * @returns {RequestData[]}
      */
-    getData({urlFilter}) {
+    getData({ urlFilter }) {
         if (this._unmatched.size > 0) {
             this._log(`⚠️ failed to match ${this._unmatched.size} events`);
         }
