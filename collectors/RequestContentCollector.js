@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
-const { getAllInitiators } = require('../helpers/initiators');
-const { filterHeaders, normalizeHeaders } = require('../helpers/headers');
+const {getAllInitiators} = require('../helpers/initiators');
+const {filterHeaders, normalizeHeaders} = require('../helpers/headers');
 const BaseCollector = require('./BaseCollector');
 const fs = require('fs');
 
 const URL = require('url').URL;
 const crypto = require('crypto');
-const { Buffer } = require('buffer');
+const {Buffer} = require('buffer');
 
 const DEFAULT_SAVE_HEADERS = ['etag', 'set-cookie', 'cache-control', 'expires', 'pragma', 'p3p', 'timing-allow-origin', 'access-control-allow-origin', 'accept-ch'];
 
@@ -15,7 +15,7 @@ class RequestContentCollector extends BaseCollector {
     /**
      * @param {{contentOutputFolder?: string, saveHeaders?: Array<string> }} additionalOptions
      */
-    constructor(additionalOptions = { saveHeaders: DEFAULT_SAVE_HEADERS }) {
+    constructor(additionalOptions = {saveHeaders: DEFAULT_SAVE_HEADERS}) {
         super();
         this._saveResponseHash = true;
 
@@ -25,7 +25,7 @@ class RequestContentCollector extends BaseCollector {
             //create folder and parent folders if they don't exist
             if (!fs.existsSync(this._contentOutputFolder)) {
                 console.log("Creating folder: " + this._contentOutputFolder);
-                fs.mkdirSync(this._contentOutputFolder, { recursive: true });
+                fs.mkdirSync(this._contentOutputFolder, {recursive: true});
             }
         }
         this._saveHeaders = DEFAULT_SAVE_HEADERS;
@@ -59,9 +59,9 @@ class RequestContentCollector extends BaseCollector {
     /**
      * @param {{cdpClient: import('puppeteer').CDPSession, url: string, type: import('./TargetCollector').TargetType}} targetInfo 
      */
-    async addTarget({ cdpClient }) {
+    async addTarget({cdpClient}) {
         await cdpClient.send('Runtime.enable');
-        await cdpClient.send('Runtime.setAsyncCallStackDepth', { maxDepth: 32 });
+        await cdpClient.send('Runtime.setAsyncCallStackDepth', {maxDepth: 32});
 
         await cdpClient.send('Network.enable');
 
@@ -97,7 +97,7 @@ class RequestContentCollector extends BaseCollector {
     async getResponseBodyHash(id, cdp) {
         try {
             // @ts-ignore oversimplified .send signature
-            let { body, base64Encoded } = await cdp.send('Network.getResponseBody', { requestId: id });
+            let {body, base64Encoded} = await cdp.send('Network.getResponseBody', {requestId: id});
 
             if (base64Encoded) {
                 body = Buffer.from(body, 'base64').toString('utf-8');
@@ -116,7 +116,7 @@ class RequestContentCollector extends BaseCollector {
      */
     async getResponseBodyAndSaveHash(id, cdp, folder, type) {
         try {
-            let { body, base64Encoded } = await cdp.send('Network.getResponseBody', { requestId: id });
+            let {body, base64Encoded} = await cdp.send('Network.getResponseBody', {requestId: id});
 
             if (base64Encoded) {
                 body = Buffer.from(body, 'base64').toString('utf-8');
@@ -137,7 +137,7 @@ class RequestContentCollector extends BaseCollector {
             }
 
             if (body.length > 0) {
-                fs.writeFile(folder + '/' + id + fileExtension, body, { encoding: 'utf-8' }, function (err) {
+                fs.writeFile(folder + '/' + id + fileExtension, body, {encoding: 'utf-8'}, function (err) {
                     if (err) throw err;
                 });
             }
@@ -184,7 +184,7 @@ class RequestContentCollector extends BaseCollector {
         /**
          * @type {InternalRequestData}
          */
-        const requestData = { id, url, method, type, initiator, startTime };
+        const requestData = {id, url, method, type, initiator, startTime};
 
         // if request A gets redirected to B which gets redirected to C chrome will produce 4 events:
         // requestWillBeSent(A) requestWillBeSent(B) requestWillBeSent(C) responseReceived()
@@ -361,7 +361,7 @@ class RequestContentCollector extends BaseCollector {
      * @param {{finalUrl: string, urlFilter?: function(string):boolean}} options
      * @returns {RequestData[]}
      */
-    getData({ urlFilter }) {
+    getData({urlFilter}) {
         if (this._unmatched.size > 0) {
             this._log(`⚠️ failed to match ${this._unmatched.size} events`);
         }

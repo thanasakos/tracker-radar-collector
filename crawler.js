@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 const puppeteer = require('puppeteer');
 const chalk = require('chalk').default;
-const { createTimer } = require('./helpers/timer');
+const {createTimer} = require('./helpers/timer');
 const wait = require('./helpers/wait');
 const tldts = require('tldts');
 
@@ -127,12 +127,12 @@ async function getSiteData(context, url, {
             return;
         }
 
-        const simpleTarget = { url: target.url(), type: target.type(), cdpClient };
+        const simpleTarget = {url: target.url(), type: target.type(), cdpClient};
         targets.push(simpleTarget);
 
         try {
             // we have to pause new targets and attach to them as soon as they are created not to miss any data
-            await cdpClient.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true });
+            await cdpClient.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true});
         } catch (e) {
             log(chalk.yellow(`Failed to set "${target.url()}" up.`), chalk.gray(e.message), chalk.gray(e.stack));
             return;
@@ -172,13 +172,13 @@ async function getSiteData(context, url, {
     const cdpClient = await page.target().createCDPSession();
 
     // without this, we will miss the initial request for the web worker or service worker file
-    await cdpClient.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true });
+    await cdpClient.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true});
 
     const initPageTimer = createTimer();
     for (let collector of collectors) {
         try {
             // eslint-disable-next-line no-await-in-loop
-            await collector.addTarget({ url: url.toString(), type: 'page', cdpClient });
+            await collector.addTarget({url: url.toString(), type: 'page', cdpClient});
         } catch (e) {
             log(chalk.yellow(`${collector.id()} failed to attach to page`), chalk.gray(e.message), chalk.gray(e.stack));
         }
@@ -200,7 +200,7 @@ async function getSiteData(context, url, {
     let timeout = false;
 
     try {
-        await page.goto(url.toString(), { timeout: maxLoadTimeMs, waitUntil: 'networkidle0' });
+        await page.goto(url.toString(), {timeout: maxLoadTimeMs, waitUntil: 'networkidle0'});
     } catch (e) {
         if (e instanceof puppeteer.errors.TimeoutError || (e.name && e.name === 'TimeoutError')) {
             log(chalk.yellow('Navigation timeout exceeded.'));

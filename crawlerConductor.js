@@ -4,7 +4,7 @@ const chalk = require('chalk').default;
 const async = require('async');
 const crawl = require('./crawler');
 const URL = require('url').URL;
-const { createTimer } = require('./helpers/timer');
+const {createTimer} = require('./helpers/timer');
 const createDeferred = require('./helpers/deferred');
 const downloadCustomChromium = require('./helpers/downloadCustomChromium');
 // eslint-disable-next-line no-unused-vars
@@ -41,7 +41,7 @@ async function crawlAndSaveData(urlString, dataCollectors, log, filterOutFirstPa
         log: prefixedLog,
         // @ts-ignore
         // if collector is RequestContentCollector add in the constructor the outputPath
-        collectors: dataCollectors.map(collector => collector.constructor.name === 'RequestContentCollector' ? new collector.constructor(additionalOptions = { contentOutputFolder: outputPath }) : new collector.constructor()),
+        collectors: dataCollectors.map(collector => collector.constructor.name === 'RequestContentCollector' ? new collector.constructor(additionalOptions = {contentOutputFolder: outputPath}) : new collector.constructor()),
         filterOutFirstParty,
         emulateMobile,
         proxyHost,
