@@ -31,7 +31,7 @@ class RequestContentCollector extends BaseCollector {
         this._saveHeaders = DEFAULT_SAVE_HEADERS;
 
         if (additionalOptions.saveHeaders) {
-            this._saveHeaders = additionalOptions.saveHeaders.map(h => h.toLocaleLowerCase());
+            this._saveHeaders = DEFAULT_SAVE_HEADERS.map(h => h.toLocaleLowerCase());
         }
     }
 
