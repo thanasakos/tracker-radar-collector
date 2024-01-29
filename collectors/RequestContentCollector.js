@@ -108,6 +108,7 @@ class RequestContentCollector extends BaseCollector {
             return null;
         }
     }
+
     /**
      * @param {RequestId} id 
      * @param {import('puppeteer').CDPSession} cdp
@@ -123,22 +124,18 @@ class RequestContentCollector extends BaseCollector {
             }
 
             let fileExtension = '';
-            let contentType = '';
 
             if (type === 'XHR') {
                 fileExtension = '.txt';
-                contentType = 'text/plain';
             } else if (type === 'WebSocket') {
                 fileExtension = '.json';
-                contentType = 'application/json';
             } else {
                 fileExtension = '.html';
-                contentType = 'text/html';
             }
 
             if (body.length > 0) {
-                fs.writeFile(folder + '/' + id + fileExtension, body, {encoding: 'utf-8'}, function (err) {
-                    if (err) throw err;
+                fs.writeFile(folder + '/' + id + fileExtension, body, {encoding: 'utf-8'}, err => {
+                    if (err) {throw err;}
                 });
             }
 
@@ -147,8 +144,6 @@ class RequestContentCollector extends BaseCollector {
             return null;
         }
     }
-
-
 
 
     /**
