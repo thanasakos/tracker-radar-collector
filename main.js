@@ -1,7 +1,8 @@
 const crawlerConductor = require('./crawlerConductor');
 const crawler = require('./crawler');
-
-const RequestCollector = require('./collectors/RequestCollector');
+// REMOVED FOR NOW AND REPLACED BY REQUEST CONTENT COLLECTOR
+// const RequestCollector = require('./collectors/RequestCollector');
+const RequestContentCollector = require('./collectors/RequestContentCollector');
 const APICallCollector = require('./collectors/APICallCollector');
 const CookieCollector = require('./collectors/CookieCollector');
 const TargetCollector = require('./collectors/TargetCollector');
@@ -15,11 +16,12 @@ module.exports = {
     crawler,
     crawlerConductor,
     // collectors ↓
-    RequestCollector,
+    // RequestCollector,
     APICallCollector,
     CookieCollector,
     TargetCollector,
     TraceCollector,
     ScreenshotCollector,
     CMPCollector,
+    RequestContentCollector
 };

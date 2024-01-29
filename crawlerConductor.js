@@ -4,7 +4,7 @@ const chalk = require('chalk').default;
 const async = require('async');
 const crawl = require('./crawler');
 const URL = require('url').URL;
-const {createTimer} = require('./helpers/timer');
+const { createTimer } = require('./helpers/timer');
 const createDeferred = require('./helpers/deferred');
 const downloadCustomChromium = require('./helpers/downloadCustomChromium');
 // eslint-disable-next-line no-unused-vars
@@ -27,18 +27,21 @@ const MAX_NUMBER_OF_RETRIES = 2;
  * @param {number} maxLoadTimeMs
  * @param {number} extraExecutionTimeMs
  * @param {Object.<string, string>} collectorFlags
+ * @param {string} outputPath
  */
-async function crawlAndSaveData(urlString, dataCollectors, log, filterOutFirstParty, dataCallback, emulateMobile, proxyHost, antiBotDetection, executablePath, maxLoadTimeMs, extraExecutionTimeMs, collectorFlags) {
+async function crawlAndSaveData(urlString, dataCollectors, log, filterOutFirstParty, dataCallback, emulateMobile, proxyHost, antiBotDetection, executablePath, maxLoadTimeMs, extraExecutionTimeMs, collectorFlags, outputPath) {
     const url = new URL(urlString);
     /**
      * @type {function(...any):void} 
      */
     const prefixedLog = (...msg) => log(chalk.gray(`${url.hostname}:`), ...msg);
-
+    console.log("Output path" + outputPath);
+    // dataCollectors.map(collector => console.log(collector.constructor.name === 'RequestContentCollector'));
     const data = await crawl(url, {
         log: prefixedLog,
         // @ts-ignore
-        collectors: dataCollectors.map(collector => new collector.constructor()),
+        // if collector is RequestContentCollector add in the constructor the outputPath
+        collectors: dataCollectors.map(collector => collector.constructor.name === 'RequestContentCollector' ? new collector.constructor(additionalOptions = { contentOutputFolder: outputPath }) : new collector.constructor()),
         filterOutFirstParty,
         emulateMobile,
         proxyHost,
@@ -57,8 +60,8 @@ async function crawlAndSaveData(urlString, dataCollectors, log, filterOutFirstPa
  */
 module.exports = async options => {
     const deferred = createDeferred();
-    const log = options.logFunction || (() => {});
-    const failureCallback = options.failureCallback || (() => {});
+    const log = options.logFunction || (() => { });
+    const failureCallback = options.failureCallback || (() => { });
 
     let numberOfCrawlers = options.numberOfCrawlers || Math.floor(cores * 0.8);
     numberOfCrawlers = Math.min(MAX_NUMBER_OF_CRAWLERS, numberOfCrawlers, options.urls.length);
@@ -89,7 +92,7 @@ module.exports = async options => {
         log(chalk.cyan(`Processing entry #${Number(idx) + 1} (${urlString}).`));
         const timer = createTimer();
 
-        const task = crawlAndSaveData.bind(null, urlString, dataCollectors, log, options.filterOutFirstParty, options.dataCallback, options.emulateMobile, options.proxyHost, (options.antiBotDetection !== false), executablePath, options.maxLoadTimeMs, options.extraExecutionTimeMs, options.collectorFlags);
+        const task = crawlAndSaveData.bind(null, urlString, dataCollectors, log, options.filterOutFirstParty, options.dataCallback, options.emulateMobile, options.proxyHost, (options.antiBotDetection !== false), executablePath, options.maxLoadTimeMs, options.extraExecutionTimeMs, options.collectorFlags, options.outputPath);
 
         async.retry(MAX_NUMBER_OF_RETRIES, task, err => {
             if (err) {

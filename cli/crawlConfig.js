@@ -81,7 +81,7 @@ function figureOut(flags) {
 
     if (flags.url) {
         cliUrls = [flags.url];
-    } else if(flags.inputList) {
+    } else if (flags.inputList) {
         cliUrls = fs.readFileSync(flags.inputList).toString().split('\n').map(u => u.trim());
     }
 
@@ -99,7 +99,7 @@ function figureOut(flags) {
             crawlConfig.urls = cliUrls;
         }
     }
-    
+
 
     crawlConfig.urls = crawlConfig.urls.map(item => {
         if (typeof item === 'string') {
@@ -136,5 +136,6 @@ module.exports = {
  * @property {boolean} emulateMobile
  * @property {boolean} disableAntiBot
  * @property {number} maxLoadTimeMs
+ * @property {string} responseFolder
  * @property {number} extraExecutionTimeMs
  */

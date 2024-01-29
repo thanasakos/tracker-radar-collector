@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 const puppeteer = require('puppeteer');
 const chalk = require('chalk').default;
-const {createTimer} = require('./helpers/timer');
+const { createTimer } = require('./helpers/timer');
 const wait = require('./helpers/wait');
 const tldts = require('tldts');
 
@@ -48,7 +48,7 @@ function openBrowser(log, proxyHost, executablePath) {
         let url;
         try {
             url = new URL(proxyHost);
-        } catch(e) {
+        } catch (e) {
             log('Invalid proxy URL');
         }
 
@@ -119,7 +119,7 @@ async function getSiteData(context, url, {
 
         const timer = createTimer();
         let cdpClient = null;
-        
+
         try {
             cdpClient = await target.createCDPSession();
         } catch (e) {
@@ -127,12 +127,12 @@ async function getSiteData(context, url, {
             return;
         }
 
-        const simpleTarget = {url: target.url(), type: target.type(), cdpClient};
+        const simpleTarget = { url: target.url(), type: target.type(), cdpClient };
         targets.push(simpleTarget);
 
         try {
             // we have to pause new targets and attach to them as soon as they are created not to miss any data
-            await cdpClient.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true});
+            await cdpClient.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true });
         } catch (e) {
             log(chalk.yellow(`Failed to set "${target.url()}" up.`), chalk.gray(e.message), chalk.gray(e.stack));
             return;
@@ -172,13 +172,13 @@ async function getSiteData(context, url, {
     const cdpClient = await page.target().createCDPSession();
 
     // without this, we will miss the initial request for the web worker or service worker file
-    await cdpClient.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: true});
+    await cdpClient.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true });
 
     const initPageTimer = createTimer();
     for (let collector of collectors) {
         try {
             // eslint-disable-next-line no-await-in-loop
-            await collector.addTarget({url: url.toString(), type: 'page', cdpClient});
+            await collector.addTarget({ url: url.toString(), type: 'page', cdpClient });
         } catch (e) {
             log(chalk.yellow(`${collector.id()} failed to attach to page`), chalk.gray(e.message), chalk.gray(e.stack));
         }
@@ -200,7 +200,7 @@ async function getSiteData(context, url, {
     let timeout = false;
 
     try {
-        await page.goto(url.toString(), {timeout: maxLoadTimeMs, waitUntil: 'networkidle0'});
+        await page.goto(url.toString(), { timeout: maxLoadTimeMs, waitUntil: 'networkidle0' });
     } catch (e) {
         if (e instanceof puppeteer.errors.TimeoutError || (e.name && e.name === 'TimeoutError')) {
             log(chalk.yellow('Navigation timeout exceeded.'));
@@ -289,11 +289,11 @@ function isThirdPartyRequest(documentUrl, requestUrl) {
 
 /**
  * @param {URL} url
- * @param {{collectors?: import('./collectors/BaseCollector')[], log?: function(...any):void, filterOutFirstParty?: boolean, emulateMobile?: boolean, emulateUserAgent?: boolean, proxyHost?: string, browserContext?: puppeteer.BrowserContext, runInEveryFrame?: function():void, executablePath?: string, maxLoadTimeMs?: number, extraExecutionTimeMs?: number, collectorFlags?: Object.<string, string>}} options
+ * @param {{collectors?: import('./collectors/BaseCollector')[], log?: function(...any):void, filterOutFirstParty?: boolean, emulateMobile?: boolean, emulateUserAgent?: boolean, proxyHost?: string, browserContext?: puppeteer.BrowserContext, runInEveryFrame?: function():void, executablePath?: string, maxLoadTimeMs?: number, extraExecutionTimeMs?: number, collectorFlags?: Object.<string, string>, outputPath: string}} options
  * @returns {Promise<CollectResult>}
  */
 module.exports = async (url, options) => {
-    const log = options.log || (() => {});
+    const log = options.log || (() => { });
     const browser = options.browserContext ? null : await openBrowser(log, options.proxyHost, options.executablePath);
     // Create a new incognito browser context.
     const context = options.browserContext || await browser.createIncognitoBrowserContext();
@@ -316,7 +316,7 @@ module.exports = async (url, options) => {
             extraExecutionTimeMs,
             collectorFlags: options.collectorFlags
         }), maxTotalTimeMs);
-    } catch(e) {
+    } catch (e) {
         log(chalk.red('Crawl failed'), e.message, chalk.gray(e.stack));
         throw e;
     } finally {

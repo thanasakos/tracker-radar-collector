@@ -5,11 +5,11 @@ const chalk = require('chalk').default;
 const runCrawlers = require('../crawlerConductor');
 const program = require('commander');
 const URL = require('url').URL;
-const {getCollectorIds, createCollector} = require('../helpers/collectorsList');
-const {getReporterIds, createReporter} = require('../helpers/reportersList');
-const {metadataFileExists, createMetadataFile} = require('./metadataFile');
+const { getCollectorIds, createCollector } = require('../helpers/collectorsList');
+const { getReporterIds, createReporter } = require('../helpers/reportersList');
+const { metadataFileExists, createMetadataFile } = require('./metadataFile');
 const crawlConfig = require('./crawlConfig');
-const {createUniqueUrlName} = require('../helpers/hash');
+const { createUniqueUrlName } = require('../helpers/hash');
 
 // eslint-disable-next-line no-unused-vars
 const BaseCollector = require('../collectors/BaseCollector');
@@ -59,7 +59,7 @@ async function run(inputUrls, outputPath, verbose, logPath, numberOfCrawlers, da
     const startTime = new Date();
 
     reporters.forEach(reporter => {
-        reporter.init({verbose, startTime, urls: inputUrls.length, logPath});
+        reporter.init({ verbose, startTime, urls: inputUrls.length, logPath });
     });
 
     /**
@@ -88,7 +88,7 @@ async function run(inputUrls, outputPath, verbose, logPath, numberOfCrawlers, da
 
         try {
             url = new URL(urlString);
-        } catch(e) {
+        } catch (e) {
             log(chalk.yellow('Invalid URL:'), urlString);
             return false;
         }
@@ -118,11 +118,11 @@ async function run(inputUrls, outputPath, verbose, logPath, numberOfCrawlers, da
      * @type {Array<Array<number>>}
      */
     let crawlTimes = [];
-    
+
     // eslint-disable-next-line arrow-parens
     const updateProgress = (/** @type {string} */site = '', /** @type {import('../crawler').CollectResult} */data) => {
         reporters.forEach(reporter => {
-            reporter.update({site, successes, failures, urls: urlsLength, data, crawlTimes, fatalError, numberOfCrawlers, regionCode});
+            reporter.update({ site, successes, failures, urls: urlsLength, data, crawlTimes, fatalError, numberOfCrawlers, regionCode });
         });
     };
 
@@ -174,16 +174,17 @@ async function run(inputUrls, outputPath, verbose, logPath, numberOfCrawlers, da
             maxLoadTimeMs,
             extraExecutionTimeMs,
             collectorFlags,
+            outputPath
         });
         log(chalk.green('\n✅ Finished successfully.'));
-    } catch(e) {
+    } catch (e) {
         log(chalk.red('\n🚨 Fatal error.'), e);
         fatalError = e;
     }
 
     const endTime = new Date();
 
-    await Promise.all(reporters.map(reporter => reporter.cleanup({endTime, successes, failures, urls: urlsLength})));
+    await Promise.all(reporters.map(reporter => reporter.cleanup({ endTime, successes, failures, urls: urlsLength })));
 
     createMetadataFile(outputPath, {
         startTime,
@@ -253,7 +254,7 @@ if (!config.urls || !config.output) {
                 dataCollectors: item.dataCollectors.map(id => createCollector(id))
             };
         }
-        
+
         return item;
     });
 
